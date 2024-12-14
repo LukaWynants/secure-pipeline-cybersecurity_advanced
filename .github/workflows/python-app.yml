@@ -17,9 +17,15 @@ jobs:
     name: Scan secrets
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
-      - name: trufflehog-actions-scan
+      - name: Run TruffleHog scan
         uses: edplato/trufflehog-actions-scan@master
+        id: trufflehog
+      - name: Check for secrets
+        if: ${{ steps.trufflehog.outputs.has_secrets == 'true' }}
+        run: |
+          echo "Secrets detected in the code!"
+          exit 1
