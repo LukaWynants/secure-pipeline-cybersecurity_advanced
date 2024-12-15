@@ -9,57 +9,62 @@ on:
     branches:
       - main
   
+  # Schedule weekly scans
   schedule:
     - cron: "0 0 * * 0"  # Weekly schedule for automated security checks
 
 jobs:
-  bandit_sast:
+  sast_scan:
+    name: Run Bandit Scan (SAST)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v2
-    
-    - name: Scan with Bandit (SAST)
-      uses: shundor/bandit-action@v1
-      with: 
-        path: "."
-        level: high
-        confidence: high
-        exit_zero: true
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+
+      - name: Install Bandit
+        run: pip install bandit
+
+      - name: Run Bandit Scan
+        run: bandit -ll -ii -r . -f json -o bandit-report.json
+
+      - name: Upload Bandit Scan Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-findings
+          path: bandit-report.json
 
   trufflehog_scan:
+    name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-        ref: ${{ github.head_ref }}  # Necessary for pull request workflow trigger
-    
-    - name: Run TruffleHog Scan for Secrets
-      uses: edplato/trufflehog-actions-scan@master
-      continue-on-error: false
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}  # Necessary for pull request workflow trigger
 
-    - name: Check TruffleHog Scan Results
-      if: ${{ steps.trufflehog.outcome == 'failure' }}
-      run: exit 1
+      - name: Run TruffleHog Scan for Secrets
+        uses: edplato/trufflehog-actions-scan@master
+        continue-on-error: false
+
+      - name: Check TruffleHog Scan Results
+        if: ${{ steps.trufflehog.outcome == 'failure' }}
+        run: exit 1
 
   snyk_scan:
+    name: Run Snyk Vulnerability Scan
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-    
-    - name: Run Snyk to Check for Vulnerabilities
-      uses: snyk/actions/python@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Run Snyk to Check for Vulnerabilities
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
