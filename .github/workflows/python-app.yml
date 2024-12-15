@@ -40,6 +40,16 @@ jobs:
           name: bandit-findings
           path: bandit-report.json
 
+      - name: Check if Bandit found vulnerabilities
+        run: |
+          if [ -f bandit-report.json ]; then
+            echo "Bandit report generated. Check for vulnerabilities in the report."
+            cat bandit-report.json
+            # Optional: You can analyze the report further if needed, for example, checking the severity level.
+          else
+            echo "No vulnerabilities found by Bandit."
+          fi
+
 
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
