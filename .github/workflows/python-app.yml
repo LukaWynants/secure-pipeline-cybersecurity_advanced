@@ -9,32 +9,18 @@ on:
   pull_request:
     branches:
       - main
+  
   schedule:
     - cron: "0 0 * * 0"  # Weekly schedule for automated security checks
 
-jobs:
-  # Dependabot job to handle automated updates
-  dependabot-scan:
-    name: Dependabot Scan for Vulnerabilities
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        
-      # Install and configure Dependabot for scanning vulnerabilities in dependencies
-      - name: Enable Dependabot security updates
-        run: echo "Dependabot configuration is managed through .github/dependabot.yml"
-
-  # Trivy job for scanning known vulnerabilities in dependencies
-  trivy-scan:
-    name: Trivy Dependency Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run Trivy for dependency vulnerabilities
-        uses: aquasecurity/trivy-action@v0.11.1
-        with:
-          scan-type: 'fs'
-          path: 
+jobs: 
+  TruffleHog: 
+    runs-on: ubuntu-latest 
+    defaults: 
+      run: 
+        shell: bash 
+    steps: 
+      - name: Checkout code 
+        uses: actions/checkout@v3 
+        with: 
+          fetch-depth: 0
