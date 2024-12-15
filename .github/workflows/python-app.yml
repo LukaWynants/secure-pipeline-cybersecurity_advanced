@@ -1,31 +1,34 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Python application
+# This GitHub Actions workflow automates the process of checking dependencies for updates using Dependabot
+name: Dependency Management and Vulnerability Scanning
 
 on:
+  # Trigger this workflow on a push to the main branch and for pull requests
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+  
+  schedule:
+    - cron: "0 0 * * 0"  # Weekly schedule for automated security checks
 
-permissions:
-  contents: read
-
-jobs:
-  ScanSecrets:
-    name: Scan secrets
+jobs: 
+  TruffleHog: 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Run TruffleHog scan
-        uses: edplato/trufflehog-actions-scan@master
-        id: trufflehog
-      - name: Check for secrets
-        if: ${{ steps.trufflehog.outputs.has_secrets == 'true' }}
-        run: |
-          echo "Secrets detected in the code!"
-          exit 1
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: ${{ github.head_ref }} # Necessary for pull request workflow trigger
+    
+    - name: Run TruffleHog Scan
+      uses: edplato/trufflehog-actions-scan@master
+    
+    - name: Scan Results Status
+      if: ${{ steps.trufflehog.outcome == 'failure' }}
+      run: exit 1
