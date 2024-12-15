@@ -42,8 +42,10 @@ jobs:
 
       - name: Check if Bandit found vulnerabilities
         run: |
-          if [ $? -eq 1 ]; then
-            echo "Bandit detected vulnerabilities!"
+          if [ -f bandit-report.json ]; then
+            echo "Bandit report generated. Check for vulnerabilities in the report."
+            cat bandit-report.json
+            # Optional: You can analyze the report further if needed, for example, checking the severity level.
           else
             echo "No vulnerabilities found by Bandit."
           fi
