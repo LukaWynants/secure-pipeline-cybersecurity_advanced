@@ -39,6 +39,14 @@ jobs:
           name: bandit-findings
           path: bandit-report.json
 
+      - name: Check if Bandit found vulnerabilities
+        run: |
+          if [ $? -eq 1 ]; then
+            echo "Bandit detected vulnerabilities!"
+          else
+            echo "No vulnerabilities found by Bandit."
+          fi
+
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
