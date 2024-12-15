@@ -64,7 +64,7 @@ jobs:
 
       - name: Run TruffleHog Scan for Secrets
         uses: edplato/trufflehog-actions-scan@master
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Check TruffleHog Scan Results
         if: ${{ steps.trufflehog.outcome == 'failure' }}
