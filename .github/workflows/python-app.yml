@@ -1,4 +1,3 @@
-# This GitHub Actions workflow automates the process of checking dependencies for updates using Dependabot
 name: Dependency Management and Vulnerability Scanning
 
 on:
@@ -13,36 +12,49 @@ on:
   schedule:
     - cron: "0 0 * * 0"  # Weekly schedule for automated security checks
 
-jobs: 
-  # Secret scanning with TruffleHog
-  TruffleHog: 
+jobs:
+  bandit_sast:
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
     
+    - name: Scan with Bandit (SAST)
+      uses: shundor/bandit-action@v1
+      with: 
+        path: "."
+        level: high
+        confidence: high
+        exit_zero: true
+
+  trufflehog_scan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        ref: ${{ github.head_ref }} # Necessary for pull request workflow trigger
+        ref: ${{ github.head_ref }}  # Necessary for pull request workflow trigger
     
-    - name: Run TruffleHog Scan
+    - name: Run TruffleHog Scan for Secrets
       uses: edplato/trufflehog-actions-scan@master
       continue-on-error: false
 
-    - name: Scan Results Status
+    - name: Check TruffleHog Scan Results
       if: ${{ steps.trufflehog.outcome == 'failure' }}
       run: exit 1
-      
-  # Dependency checking with Snyk
-  synk:
+
+  snyk_scan:
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
-    
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
@@ -51,5 +63,3 @@ jobs:
       uses: snyk/actions/python@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-    
-
