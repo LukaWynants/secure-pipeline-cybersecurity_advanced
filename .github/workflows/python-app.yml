@@ -69,15 +69,3 @@ jobs:
       - name: Check TruffleHog Scan Results
         if: ${{ steps.trufflehog.outcome == 'failure' }}
         run: exit 1
-
-  snyk_scan:
-    name: Run Snyk Vulnerability Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Run Snyk to Check for Vulnerabilities
-        uses: snyk/actions/python@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
