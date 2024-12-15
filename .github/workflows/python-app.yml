@@ -45,7 +45,7 @@ jobs:
     
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
     
     - name: Run Snyk to Check for Vulnerabilities
       uses: snyk/actions/python@master
