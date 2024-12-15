@@ -30,7 +30,7 @@ jobs:
     
     - name: Run TruffleHog Scan
       uses: edplato/trufflehog-actions-scan@master
-      continue-on-error: true
+      continue-on-error: false
 
     - name: Scan Results Status
       if: ${{ steps.trufflehog.outcome == 'failure' }}
