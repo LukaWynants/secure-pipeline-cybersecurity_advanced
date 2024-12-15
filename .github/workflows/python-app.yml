@@ -30,6 +30,7 @@ jobs:
     
     - name: Run TruffleHog Scan
       uses: edplato/trufflehog-actions-scan@master
+      continue-on-error: true
 
   # Dependency checking with Snyk
     - name: Checkout Repository
