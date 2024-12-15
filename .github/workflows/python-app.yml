@@ -14,6 +14,7 @@ on:
     - cron: "0 0 * * 0"  # Weekly schedule for automated security checks
 
 jobs: 
+  # Secret scanning with TruffleHog
   TruffleHog: 
     runs-on: ubuntu-latest
     defaults:
@@ -21,13 +22,23 @@ jobs:
         shell: bash
     
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Code
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
         ref: ${{ github.head_ref }} # Necessary for pull request workflow trigger
     
     - name: Run TruffleHog Scan
       uses: edplato/trufflehog-actions-scan@master
+
+  # Dependency checking with Snyk
+    - name: Checkout Repository
+      uses: actions/checkout@master
+    
+    - name: Run Snyk to Check for Vulnerabilities
+      uses: snyk/actions/python@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     
     - name: Scan Results Status
       if: ${{ steps.trufflehog.outcome == 'failure' }}
