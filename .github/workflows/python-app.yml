@@ -32,7 +32,18 @@ jobs:
       uses: edplato/trufflehog-actions-scan@master
       continue-on-error: true
 
+    - name: Scan Results Status
+      if: ${{ steps.trufflehog.outcome == 'failure' }}
+      run: exit 1
+      
   # Dependency checking with Snyk
+  synk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
     - name: Checkout Repository
       uses: actions/checkout@master
     
@@ -41,6 +52,4 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     
-    - name: Scan Results Status
-      if: ${{ steps.trufflehog.outcome == 'failure' }}
-      run: exit 1
+
