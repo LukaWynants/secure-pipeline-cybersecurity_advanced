@@ -4,5 +4,3 @@ print("test")
 print("test")
 print("test")
 
-import hashlib
-md5_hash = hashlib.md5()
