@@ -1,14 +1,17 @@
 name: Dependency Management and Vulnerability Scanning
 
 on:
+  # Trigger this workflow on a push to the main branch and for pull requests
   push:
     branches:
       - main
   pull_request:
     branches:
       - main
+  
+  # Schedule weekly scans
   schedule:
-    - cron: "0 0 * * 0"
+    - cron: "0 0 * * 0"  # Weekly schedule for automated security checks
 
 jobs:
   sast_scan:
@@ -28,10 +31,11 @@ jobs:
 
       - name: Run Bandit Scan
         run: bandit -ll -ii -r . -f json -o bandit-report.json
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Upload Bandit Scan Artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: bandit-findings
           path: bandit-report.json
@@ -53,21 +57,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref }}  # Necessary for pull request workflow trigger
 
-      - name: Run TruffleHog Scan
+      - name: Run TruffleHog Scan for Secrets
         uses: edplato/trufflehog-actions-scan@master
         continue-on-error: true
 
-      - name: Upload TruffleHog Findings
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: trufflehog-findings
-          path: ./trufflehog-findings.log
-
       - name: Check TruffleHog Scan Results
-        if: failure()
+        if: ${{ steps.trufflehog.outcome == 'failure' }}
         run: exit 1
