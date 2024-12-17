@@ -92,13 +92,13 @@ jobs:
           name: safety-report
           path: safety-report.txt
      
-      - name: Display Bandit Report
+      - name: Display Safety Report
         run: |
           if [ -f safety-report.txt ]; then
-            echo "Displaying Bandit Report:"
+            echo "Displaying Safety Report:"
             cat safety-report.txt
           else
-            echo "Bandit report not found."
+            echo "Safety report not found."
           fi
 
   trufflehog_scan:
