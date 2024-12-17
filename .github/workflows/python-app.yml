@@ -85,13 +85,6 @@ jobs:
           safety check -r requirements.txt --output text > safety-report.txt
           continue-on-error: true
 
-      - name: Upload Safety Report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: safety-report
-          path: safety-report.txt
-     
       - name: Debug Safety Report existence
         run: |
           if [ -f safety-report.txt ]; then
@@ -100,6 +93,15 @@ jobs:
           else
             echo "Safety report not found."
           fi
+
+      - name: Upload Safety Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: safety-report
+          path: safety-report.txt
+     
+
 
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
