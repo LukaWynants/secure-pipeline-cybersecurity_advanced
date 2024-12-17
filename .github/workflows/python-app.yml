@@ -92,10 +92,10 @@ jobs:
           name: safety-report
           path: safety-report.txt
      
-      - name: Display Safety Report
+      - name: Debug Safety Report existence
         run: |
           if [ -f safety-report.txt ]; then
-            echo "Displaying Safety Report:"
+            echo "Safety report exists. Contents:"
             cat safety-report.txt
           else
             echo "Safety report not found."
