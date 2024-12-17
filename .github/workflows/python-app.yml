@@ -1,7 +1,7 @@
 name: Dependency Management and Vulnerability Scanning
 
 on:
-  # Trigger this workflow on a push to the main branch and for pull requests
+  # Trigger workflow met pull request
   push:
     branches:
       - main
@@ -9,9 +9,9 @@ on:
     branches:
       - main
   
-  # Schedule weekly scans
+
   schedule:
-    - cron: "0 0 * * 0"  # Weekly schedule for automated security checks
+    - cron: "0 0 * * 0"  # wekelijkse scan uitvoeren op zondag
 
 jobs:
   sast_scan:
