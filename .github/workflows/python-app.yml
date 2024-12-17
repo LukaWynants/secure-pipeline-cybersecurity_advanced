@@ -91,9 +91,15 @@ jobs:
         with:
           name: safety-report
           path: safety-report.txt
-
-      - name: Display Safety Results
-        run: cat safety-report.txt
+     
+      - name: Display Bandit Report
+        run: |
+          if [ -f bandit-report.json ]; then
+            echo "Displaying Bandit Report:"
+            cat safety-report.txt
+          else
+            echo "Bandit report not found."
+          fi
 
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
