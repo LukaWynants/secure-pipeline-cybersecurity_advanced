@@ -39,12 +39,14 @@ jobs:
         with:
           name: bandit-findings
           path: bandit-report.json
+      
+      - name: Display Safety Results
+        run: cat safety-report.txt
 
       - name: Check if Bandit found vulnerabilities
         run: |
           if grep -q '"issue_severity": "HIGH"' bandit-report.json; then
             echo "High severity vulnerabilities detected!"
-            cat safety-report.txt
             exit 1
           elif grep -q '"issue_severity": "MEDIUM"' bandit-report.json; then
             echo "Medium severity vulnerabilities detected!"
