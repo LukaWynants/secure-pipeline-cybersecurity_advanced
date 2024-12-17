@@ -44,9 +44,11 @@ jobs:
         run: |
           if grep -q '"issue_severity": "HIGH"' bandit-report.json; then
             echo "High severity vulnerabilities detected!"
+            cat safety-report.txt
             exit 1
           elif grep -q '"issue_severity": "MEDIUM"' bandit-report.json; then
             echo "Medium severity vulnerabilities detected!"
+            cat safety-report.txt
             exit 1
           else
             echo "No vulnerabilities found by Bandit."
