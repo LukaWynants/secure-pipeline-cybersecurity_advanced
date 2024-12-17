@@ -94,7 +94,7 @@ jobs:
      
       - name: Display Bandit Report
         run: |
-          if [ -f bandit-report.json ]; then
+          if [ -f safety-report.txt ]; then
             echo "Displaying Bandit Report:"
             cat safety-report.txt
           else
