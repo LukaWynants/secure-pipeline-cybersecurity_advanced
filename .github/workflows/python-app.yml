@@ -40,8 +40,14 @@ jobs:
           name: bandit-findings
           path: bandit-report.json
       
-      - name: Display Safety Results
-        run: cat safety-report.txt
+      - name: Display Bandit Report
+        run: |
+          if [ -f bandit-report.json ]; then
+            echo "Displaying Bandit Report:"
+            cat bandit-report.json
+          else
+            echo "Bandit report not found."
+          fi
 
       - name: Check if Bandit found vulnerabilities
         run: |
