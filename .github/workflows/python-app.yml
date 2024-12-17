@@ -51,6 +51,9 @@ jobs:
           else
             echo "No vulnerabilities found by Bandit."
           fi
+          
+      - name: Display Safety Results
+        run: cat safety-report.txt
     
   safety_scan:
     name: Run Safety Vulnerability Scan
