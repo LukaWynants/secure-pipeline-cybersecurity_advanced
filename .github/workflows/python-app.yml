@@ -82,7 +82,7 @@ jobs:
 
       - name: Run Safety Scan
         run: |
-          safety check -r requirements.txt --output text > safety-report.txt
+          safety check -r requirements.txt --output text > safety-report.txt || exit 1
           continue-on-error: true
 
       - name: Debug Safety Report existence
