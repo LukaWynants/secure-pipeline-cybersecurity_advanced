@@ -118,18 +118,30 @@ jobs:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
-          
-      - name: trufflehog-actions-scan
-        uses: edplato/trufflehog-actions-scan@master
   
-      - name: Check scan results
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@v3
+        with:
+          scan_directory: .
+          output_file: trufflehog-results.json
+  
+      - name: Check TruffleHog Results
         run: |
-          if [[ "${{ steps.trufflehog.outcome }}" == "failure" ]]; then
+          if [ -s trufflehog-results.json ]; then
+            echo "Secrets found! Review trufflehog-results.json for details."
+            cat trufflehog-results.json
             exit 1
           else
-            echo "TruffleHog scan passed. Proceeding with the workflow."
+            echo "No secrets detected by TruffleHog."
           fi
+  
+      - name: Upload TruffleHog Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trufflehog-results
+          path: trufflehog-results.json
