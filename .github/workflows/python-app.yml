@@ -83,6 +83,7 @@ jobs:
       - name: Run Safety Scan
         run: safety check -r requirements.txt --output text > safety-report.txt || exit 1
         continue-on-error: true
+        
 
       - name: Debug Safety Report existence
         if: always()
@@ -94,14 +95,23 @@ jobs:
             echo "Safety report not found."
           fi
 
+      - name: Fail if vulnerabilities detected
+        if: always()
+        run: |
+          if grep -q "vulnerable" safety-report.txt; then
+            echo "Vulnerabilities detected! Failing the workflow."
+            exit 1
+          else
+            echo "No vulnerabilities detected."
+          fi
+        shell: bash
+
       - name: Upload Safety Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: safety-report
           path: safety-report.txt
-     
-
 
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
