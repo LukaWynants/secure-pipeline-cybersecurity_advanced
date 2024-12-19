@@ -117,20 +117,17 @@ jobs:
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
   
       - name: Run TruffleHog Scan for Secrets
-        id: trufflehog  # Add an ID for this step
+        id: trufflehog
         uses: edplato/trufflehog-actions-scan@master
+        with:
+          scan-directory: ./  # Scan the entire directory
         continue-on-error: true
   
       - name: Fail Workflow if Secrets Detected
