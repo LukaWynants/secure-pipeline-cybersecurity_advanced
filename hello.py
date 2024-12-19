@@ -1,1 +1,5 @@
 print("no")
+
+password = "XXXXXXXXXXXXXXXXXXXX"
+
+
