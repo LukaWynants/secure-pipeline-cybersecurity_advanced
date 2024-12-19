@@ -119,19 +119,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-  
-      - name: Run TruffleHog Scan for Secrets
+
+      - name: Run TruffleHog Scan
         id: trufflehog
-        continue-on-error: true  
         uses: edplato/trufflehog-actions-scan@master
         with:
           scanArguments: "--regex --entropy=False --max_depth=50"
+        continue-on-error: true
 
-      - name: Summarize Scan Results
+      - name: Check TruffleHog Results
         run: |
-          echo "TruffleHog result: ${{ steps.trufflehog.outcome }}"
           if [[ "${{ steps.trufflehog.outcome }}" == "failure" ]]; then
+            echo "Secrets detected by TruffleHog!"
             exit 1
+          else
+            echo "No secrets found by TruffleHog."
+          fi
