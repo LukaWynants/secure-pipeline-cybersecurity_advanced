@@ -115,7 +115,6 @@ jobs:
           path: safety-report.txt
      
 
-
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
@@ -124,11 +123,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}  # Necessary for pull request workflow trigger
-
+          ref: ${{ github.head_ref }}
+  
       - name: Run TruffleHog Scan for Secrets
+        id: trufflehog  # Add an ID for this step
         uses: edplato/trufflehog-actions-scan@master
-
-      - name: Check TruffleHog Scan Results
+        continue-on-error: true
+  
+      - name: Fail Workflow if Secrets Detected
         if: ${{ steps.trufflehog.outcome == 'failure' }}
         run: exit 1
