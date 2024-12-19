@@ -117,6 +117,10 @@ jobs:
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -128,8 +132,6 @@ jobs:
         id: trufflehog  # Add an ID for this step
         uses: edplato/trufflehog-actions-scan@master
         continue-on-error: true
-        with:
-          scanArguments: "--regex --entropy=False --max_depth=50"
   
       - name: Fail Workflow if Secrets Detected
         if: ${{ steps.trufflehog.outcome == 'failure' }}
