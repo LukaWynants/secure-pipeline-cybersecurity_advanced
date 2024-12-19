@@ -115,33 +115,20 @@ jobs:
           path: safety-report.txt
 
   trufflehog_scan:
-    name: Run TruffleHog Scan for Secrets
+    name: Scan secrets
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
-  
-      - name: Run TruffleHog
-        uses: trufflesecurity/trufflehog@v3
-        with:
-          scan_directory: .
-          output_file: trufflehog-results.json
-  
-      - name: Check TruffleHog Results
+          
+      - name: Run TruffleHog scan
+        uses: edplato/trufflehog-actions-scan@master
+        id: trufflehog
+        
+      - name: Check for secrets
+        if: ${{ steps.trufflehog.outputs.has_secrets == 'true' }}
         run: |
-          if [ -s trufflehog-results.json ]; then
-            echo "Secrets found! Review trufflehog-results.json for details."
-            cat trufflehog-results.json
-            exit 1
-          else
-            echo "No secrets detected by TruffleHog."
-          fi
-  
-      - name: Upload TruffleHog Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: trufflehog-results
-          path: trufflehog-results.json
+          echo "Secrets detected in the code!"
+          exit 1
