@@ -117,6 +117,10 @@ jobs:
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
