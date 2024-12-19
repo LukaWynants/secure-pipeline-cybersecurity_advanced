@@ -1,3 +1,6 @@
 print("no")
 
 
+
+
+AWS_SECRET_KEY = "XXXXXXXXXXXXXXXXXXXX"
