@@ -114,7 +114,6 @@ jobs:
           name: safety-report
           path: safety-report.txt
      
-
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
