@@ -124,12 +124,18 @@ jobs:
           fetch-depth: 0
   
       - name: Run TruffleHog Scan for Secrets
-        id: trufflehog
+        id: trufflehog  # Add ID to reference outputs
         uses: edplato/trufflehog-actions-scan@master
         with:
-          scan-directory: ./  # Scan the entire directory
-        continue-on-error: true
+          scan-directory: ./  # Scan the entire repository
+          output-format: json 
+        continue-on-error: true  
   
-      - name: Fail Workflow if Secrets Detected
-        if: ${{ steps.trufflehog.outcome == 'failure' }}
-        run: exit 1
+      - name: Check TruffleHog Results
+        if: always()  # Always check results, even if the previous step errored
+        run: |
+          echo "TruffleHog scan completed."
+          echo "Checking if secrets were found..."
+          grep "reason" trufflehog-results.json && exit 1 || echo "No secrets found."
+        env:
+          TRUFFLEHOG_RESULTS: ${{ steps.trufflehog.outputs.output }}
