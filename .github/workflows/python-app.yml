@@ -93,6 +93,18 @@ jobs:
           else
             echo "Safety report not found."
           fi
+          
+      - name: Debug Safety Report and Script
+        if: always()
+        run: |
+          echo "Debugging safety-report.txt"
+          cat safety-report.txt
+          echo "Script execution begins"
+          if grep -q "vulnerable" safety-report.txt; then
+            echo "Condition matched: Vulnerabilities found"
+          else
+            echo "Condition not matched: No vulnerabilities"
+          fi
 
       - name: Upload Safety Report
         uses: actions/upload-artifact@v4
