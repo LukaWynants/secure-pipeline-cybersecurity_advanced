@@ -118,34 +118,18 @@ jobs:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - name: Run TruffleHog Scan for Secrets
+        id: trufflehog
+        continue-on-error: true  # Allow TruffleHog to fail without stopping other scans
+        uses: edplato/trufflehog-actions-scan@master
         with:
-          fetch-depth: 0
-    
-      - name: Install TruffleHog
+          scanArguments: "--regex --entropy=False --max_depth=50"
+  
+      - name: Check scan results
         run: |
-          curl -LO https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog-linux-amd64
-          chmod +x trufflehog-linux-amd64
-          sudo mv trufflehog-linux-amd64 /usr/local/bin/trufflehog
-    
-      - name: Run TruffleHog Filesystem Scan
-        run: |
-          trufflehog filesystem --directory ./ --json > trufflehog-report.json
-          cat trufflehog-report.json
-    
-      - name: Fail Workflow if Secrets Detected
-        run: |
-          if grep -q '"SourceMetadata"' trufflehog-report.json; then
-            echo "Secrets detected by TruffleHog!"
+          if [[ "${{ steps.trufflehog.outcome }}" == "failure" ]]; then
+            echo "One or more security scans failed. Blocking the pull request."
             exit 1
           else
-            echo "No secrets found by TruffleHog."
+            echo "TruffleHog scan passed. Proceeding with the workflow."
           fi
-    
-      - name: Upload TruffleHog Report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: trufflehog-report
-          path: trufflehog-report.json
