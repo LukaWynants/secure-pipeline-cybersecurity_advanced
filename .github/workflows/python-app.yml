@@ -115,29 +115,20 @@ jobs:
           path: safety-report.txt
      
   trufflehog_scan:
+    name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Checkout Code
+        uses: actions/checkout@v2
         with:
-          python-version: '3.x'
-
-      - name: Install TruffleHog
-        run: |
-          python -m pip install --upgrade pip
-          pip install trufflehog
-
-      - name: Run TruffleHog scan
-        run: |
-          trufflehog filesystem --directory ./
-
-      - name: Upload scan results as artifact
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: trufflehog-results
-          path: trufflehog.json
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+  
+      - name: Run TruffleHog Scan for Secrets
+        id: trufflehog  # Add an ID for this step
+        uses: edplato/trufflehog-actions-scan@master
+        continue-on-error: true
+  
+      - name: Fail Workflow if Secrets Detected
+        if: ${{ steps.trufflehog.outcome == 'failure' }}
+        run: exit 1
