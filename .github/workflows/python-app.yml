@@ -124,7 +124,7 @@ jobs:
           fetch-depth: 0
   
       - name: Run TruffleHog
-        uses: trufflesecurity/trufflehog@v3
+        uses: trufflesecurity/trufflehog@v2
         with:
           scan_directory: .
           output_file: trufflehog-results.json
