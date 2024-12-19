@@ -118,9 +118,14 @@ jobs:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+    
       - name: Run TruffleHog Scan for Secrets
         id: trufflehog
-        continue-on-error: true  # Allow TruffleHog to fail without stopping other scans
+        continue-on-error: true 
         uses: edplato/trufflehog-actions-scan@master
         with:
           scanArguments: "--regex --entropy=False --max_depth=50"
