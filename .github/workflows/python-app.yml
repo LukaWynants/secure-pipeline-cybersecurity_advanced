@@ -94,7 +94,7 @@ jobs:
             echo "Safety report not found."
           fi
           
-      - name: Debug Safety Report and Script
+      - name: fail if vulnerabuility found
         if: always()
         run: |
           echo "Debugging safety-report.txt"
@@ -102,6 +102,7 @@ jobs:
           echo "Script execution begins"
           if grep -q "vulnerable" safety-report.txt; then
             echo "Condition matched: Vulnerabilities found"
+            exit 1
           else
             echo "Condition not matched: No vulnerabilities"
           fi
