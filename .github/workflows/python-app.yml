@@ -128,7 +128,6 @@ jobs:
       - name: Check scan results
         run: |
           if [[ "${{ steps.trufflehog.outcome }}" == "failure" ]]; then
-            echo "One or more security scans failed. Blocking the pull request."
             exit 1
           else
             echo "TruffleHog scan passed. Proceeding with the workflow."
