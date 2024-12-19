@@ -94,6 +94,17 @@ jobs:
             echo "Safety report not found."
           fi
 
+      - name: Fail if vulnerabilities detected
+        if: always()
+        run: |
+          if grep -q "vulnerable" safety-report.txt; then
+            echo "Vulnerabilities detected! Failing the workflow."
+            exit 1
+          else
+            echo "No vulnerabilities detected."
+          fi
+        shell: bash
+
       - name: Upload Safety Report
         uses: actions/upload-artifact@v4
         if: always()
@@ -101,8 +112,6 @@ jobs:
           name: safety-report
           path: safety-report.txt
      
-
-
   trufflehog_scan:
     name: Run TruffleHog Scan for Secrets
     runs-on: ubuntu-latest
