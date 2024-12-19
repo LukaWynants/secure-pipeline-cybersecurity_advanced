@@ -128,6 +128,8 @@ jobs:
         id: trufflehog  # Add an ID for this step
         uses: edplato/trufflehog-actions-scan@master
         continue-on-error: true
+        with:
+          scanArguments: "--regex --entropy=False --max_depth=50"
   
       - name: Fail Workflow if Secrets Detected
         if: ${{ steps.trufflehog.outcome == 'failure' }}
